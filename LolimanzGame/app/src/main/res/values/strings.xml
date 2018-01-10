@@ -1,6 +1,23 @@
 <resources>
     <string name="app_name">LolimanzGame</string>
 
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="checkbox_remeber_username">记住用户名</string>
+    <string name="checkbox_auto_login">自动登录</string>
+
+    <string name="loginBtn">欢迎来到满满的世界...</string>
+    <string name="welcome_content">Hello\nLoliman</string>
+    <string name="title_activity_login">登录</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">请输入邮箱</string>
+    <string name="prompt_password">请输入密码</string>
+    <string name="action_sign_in">登录或创建账户</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">邮箱非法</string>
+    <string name="error_invalid_password">密码太短</string>
+    <string name="error_incorrect_password">密码不正确</string>
+    <string name="error_field_required">必填项</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
 </resources>

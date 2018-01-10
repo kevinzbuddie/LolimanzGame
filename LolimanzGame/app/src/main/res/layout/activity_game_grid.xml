@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <GridView
+        android:id="@+id/id_game_grid_001"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="6"
+        android:padding="10dp"
+        android:horizontalSpacing="3dp"
+        android:verticalSpacing="3dp">
+
+    </GridView>
+
+    <ImageView
+        android:id="@+id/id_game_SCORE_pic_002"
+        android:layout_width="@dimen/icon_width"
+        android:layout_height="@dimen/icon_height"
+        android:layout_below="@id/id_game_grid_001"
+        android:background="@drawable/png_countdown"
+        android:layout_marginLeft="@dimen/icon_width"
+        android:layout_marginTop="@dimen/icon_height"/>
+
+    <TextView
+        android:id="@+id/id_game_score_count_003"
+        android:layout_width="@dimen/icon_width"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/id_game_grid_001"
+        android:layout_toRightOf="@id/id_game_SCORE_pic_002"
+        android:layout_marginTop="@dimen/icon_height"
+        android:layout_marginLeft="@dimen/icon_width"
+        android:background="@drawable/edit_shape"/>
+
+</RelativeLayout>

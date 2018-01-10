@@ -14,10 +14,10 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:keepScreenOn="true"
-        android:text="@string/dummy_content"
+        android:text="@string/welcome_content"
         android:textColor="#33b5e5"
         android:textSize="50sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
@@ -37,12 +37,16 @@
             tools:ignore="UselessParent">
 
             <Button
-                android:id="@+id/dummy_button"
+                android:id="@+id/loginBtn"
                 style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/dummy_button" />
+                android:background="@drawable/btn_shape"
+                android:text="@string/loginBtn"
+                android:textColor="#0099FF"
+                android:textSize="28sp"
+                android:textAllCaps="false" />
 
         </LinearLayout>
     </FrameLayout>
