@@ -96,7 +96,7 @@ public class FullscreenActivity extends AppCompatActivity {
                 delayedHide(AUTO_HIDE_DELAY_MILLIS);
             }
 
-            Intent intent = new Intent(FullscreenActivity.this, LoginActivity.class);
+            Intent intent = new Intent(FullscreenActivity.this, GameEntryActivity.class);
             startActivity(intent);
 
             return;

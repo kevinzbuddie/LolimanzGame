@@ -5,17 +5,16 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.XmlResourceParser;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -32,11 +31,16 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.gamezone.loliman.lolimanzgame.gridview.GameGridViewActivity;
+import com.gamezone.loliman.lolimanzgame.gridview.SerializableHashMap;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -71,6 +75,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private CheckBox checkbox_remember_username;
     private CheckBox checkbox_auto_login;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +109,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         checkbox_remember_username.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(LoginActivity.this, isChecked? "001_checked!!!":"001_unchecked!!!", Toast.LENGTH_SHORT).show();
                 if (!isChecked) {
                     checkbox_auto_login.setChecked(false);
                 }
@@ -113,7 +118,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         checkbox_auto_login.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(LoginActivity.this, isChecked? "002_checked!!!":"002_unchecked!!!", Toast.LENGTH_SHORT).show();
                 if (isChecked) {
                     checkbox_remember_username.setChecked(true);
                 }
@@ -166,7 +170,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -217,9 +220,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
-
-        Intent intent = new Intent(LoginActivity.this, GameGridViewActivity.class);
-        startActivity(intent);
 
     }
 

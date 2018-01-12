@@ -32,6 +32,9 @@
         <activity
             android:name=".gridview.GameGridViewActivity"
             android:label="@string/app_name" />
+        <activity
+            android:name=".GameEntryActivity"
+            android:label="@string/app_name" />
     </application>
 
 </manifest>
