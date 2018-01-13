@@ -1,27 +1,32 @@
 package com.gamezone.loliman.lolimanzgame;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-import android.app.LoaderManager;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.XmlResourceParser;
-import android.database.Cursor;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.gamezone.loliman.lolimanzgame.gridview.GameGridViewActivity;
+import com.gamezone.loliman.lolimanzgame.gridview.GameSetEntriesAdapter;
 import com.gamezone.loliman.lolimanzgame.gridview.SerializableHashMap;
 
-import org.xmlpull.v1.XmlPullParserException;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
@@ -34,16 +39,64 @@ public class GameEntryActivity extends AppCompatActivity {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
+    private GridView game_set_entries_view;
     private EditText editText_difficulty;
     private String sDifficulty;
     private Button mStartGameButton;
+    private int view_height;
+    public static int mColumn = 4;
+    private int game_set_data[][] = new int[mColumn*mColumn][2];//two value for each set
+    private static String game_set_data_file_name = "game_set_data.dat";
     private HashMap mGameMap = new HashMap();
     private String mMapTag;
+    private int requestCode = 1980; //for result intent!
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE" };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_entry);
+
+        game_set_entries_view = findViewById(R.id.id_game_set_entries);
+        game_set_entries_view.setNumColumns(mColumn);
+
+        DisplayMetrics dm2 = getResources().getDisplayMetrics();
+        RelativeLayout.LayoutParams Params = (RelativeLayout.LayoutParams)game_set_entries_view.getLayoutParams();
+        Params.height = dm2.widthPixels;
+        view_height = dm2.widthPixels;
+        game_set_entries_view.setLayoutParams(Params);
+
+        verifyStoragePermissions(this);
+
+        //initialize the data file
+        if (!FileIsExist(game_set_data_file_name)){
+            try {
+                ReWriteFile("1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String sDataRead = null;
+        try {
+            sDataRead = ReadFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sDataRead != null;
+        String[] s = sDataRead.split("\n");
+        for (int i = 0; i<mColumn*mColumn; i++){
+            String[] ss = s[i].split(",");
+            game_set_data[i][0] = Integer.valueOf(ss[0]);
+            game_set_data[i][1] = Integer.valueOf(ss[1]);
+        }
+
+        final GameSetEntriesAdapter game_adapter = new GameSetEntriesAdapter(this, mColumn, view_height, game_set_data);
+        game_set_entries_view.setAdapter(game_adapter);
 
         mStartGameButton = findViewById(R.id.start_game_button);
         mStartGameButton.setOnClickListener(new OnClickListener() {
@@ -62,8 +115,103 @@ public class GameEntryActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        game_set_entries_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                game_adapter.setSeclection(position);
+                game_adapter.notifyDataSetChanged();
+                if ( position ==0 || game_set_data[position][0] != 1 ) {
+                    sDifficulty = String.valueOf(position + 2);
+                    attemptLogin();
+                }
+            }
+        });
     }
 
+    public static void verifyStoragePermissions(Activity activity) {
+
+        try {
+            //检测是否有写的权限
+            int permission = ActivityCompat.checkSelfPermission(activity,"android.permission.WRITE_EXTERNAL_STORAGE");
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                // 没有写的权限，去申请写的权限，会弹出对话框
+                ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE,REQUEST_EXTERNAL_STORAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean FileIsExist(String pathname){
+        try
+        {
+            File f=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"lolimanzGame",pathname);
+            if(!f.exists())
+            {
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public static void ReWriteFile(String Content) throws IOException
+    {
+        try
+        {
+            //internal file ops.
+            //FileOutputStream fos = openFileOutput(game_set_data_file_name, MODE_PRIVATE);
+
+            //external file ops
+            File dir = new File(Environment.getExternalStorageDirectory(),"lolimanzGame");
+            if (!dir.exists()){
+                dir.mkdirs();
+            }
+            File f = new File(dir, game_set_data_file_name);
+            if (!f.exists()){
+                if (dir.exists()) {
+                    f.createNewFile();
+                }
+            }else if(f.exists()){
+                f.delete();
+                f.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(Content.getBytes());
+            fos.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static String ReadFile() throws IOException
+    {
+        try
+        {
+            //internal file ops.
+            //FileInputStream fis=openFileInput(game_set_data_file_name);
+
+            //external file ops
+            File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"lolimanzGame", game_set_data_file_name);
+
+            FileInputStream fis = new FileInputStream(f);
+
+            byte[] buffer = new byte[fis.available()];
+            fis.read(buffer);
+            return new String(buffer);
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -76,17 +224,17 @@ public class GameEntryActivity extends AppCompatActivity {
             return;
         }
 
-        if (Integer.valueOf(sDifficulty).intValue() > 10) {
-            Toast.makeText(GameEntryActivity.this, "难度不能大于10", Toast.LENGTH_SHORT).show();
+        if (Integer.valueOf(sDifficulty) > 10) {
+            Toast.makeText(GameEntryActivity.this, "未完工，敬请期待...", Toast.LENGTH_SHORT).show();
             return;
-        }else if (Integer.valueOf(sDifficulty).intValue() <= 1) {
-            Toast.makeText(GameEntryActivity.this, "难度要大于1", Toast.LENGTH_SHORT).show();
+        }else if (Integer.valueOf(sDifficulty) <= 1) {
+            Toast.makeText(GameEntryActivity.this, "未完工，敬请期待...", Toast.LENGTH_SHORT).show();
             return;
         }
 
         XmlResourceParser game_map_xml = getResources().getXml(R.xml.game_map);
 
-        if (Integer.valueOf(sDifficulty).intValue() > 1 && Integer.valueOf(sDifficulty).intValue() <= 6) {
+        if (Integer.valueOf(sDifficulty)> 1 && Integer.valueOf(sDifficulty) <= 6) {
             Random rand = new Random();
             int tag = rand.nextInt(4);
             if (tag == 0) {
@@ -98,7 +246,7 @@ public class GameEntryActivity extends AppCompatActivity {
             } else {
                 mMapTag = "soccer";
             }
-        } else if (Integer.valueOf(sDifficulty).intValue() > 6 && Integer.valueOf(sDifficulty).intValue() <= 8) {
+        } else if (Integer.valueOf(sDifficulty)> 6 && Integer.valueOf(sDifficulty) <= 8) {
             Random rand = new Random();
             int tag = rand.nextInt(3);
             if (tag == 0) {
@@ -108,7 +256,7 @@ public class GameEntryActivity extends AppCompatActivity {
             } else {
                 mMapTag = "soccer";
             }
-        } else if (Integer.valueOf(sDifficulty).intValue() > 8 && (Integer.valueOf(sDifficulty).intValue() <= 10)) {
+        } else if (Integer.valueOf(sDifficulty) > 8 && (Integer.valueOf(sDifficulty) <= 10)) {
             Random rand = new Random();
             int tag = rand.nextInt(2);
             if (tag == 0) {
@@ -116,7 +264,7 @@ public class GameEntryActivity extends AppCompatActivity {
             } else {
                 mMapTag = "soccer";
             }
-        } else if (Integer.valueOf(sDifficulty).intValue() > 10) {
+        } else if (Integer.valueOf(sDifficulty) > 10) {
             //Todo
         }
 
@@ -144,12 +292,11 @@ public class GameEntryActivity extends AppCompatActivity {
                 //获取解析器的下一个事件
                 game_map_xml.next();
             }
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
+        //
         Intent intent = new Intent(GameEntryActivity.this, GameGridViewActivity.class);
 
         Bundle bundle = new Bundle();
@@ -160,7 +307,52 @@ public class GameEntryActivity extends AppCompatActivity {
         bundle.putSerializable("game_map", intent_map);
 
         intent.putExtra("game_bundle", bundle);
-        startActivity(intent);
+        startActivityForResult(intent, requestCode);//for result intent!
+    }
+
+    // 回调方法，从第二个页面回来的时候会执行这个方法
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // 根据上面发送过去的请求吗来区别
+        switch (requestCode) {
+            case 1980:
+                //String whichSet = data.getStringExtra("whichSet");
+                //String isDone = data.getStringExtra("isDone");
+
+                String sDataRead = null;
+                try {
+                    sDataRead = ReadFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                assert sDataRead != null;
+                String[] s = sDataRead.split("\n");
+
+                for (int i = 0; i<mColumn*mColumn; i++){
+                    String[] ss = s[i].split(",");
+                    game_set_data[i][0] = Integer.valueOf(ss[0]);
+                    game_set_data[i][1] = Integer.valueOf(ss[1]);
+                }
+
+                final GameSetEntriesAdapter game_adapter = new GameSetEntriesAdapter(this, mColumn, view_height, game_set_data);
+                game_set_entries_view.setAdapter(game_adapter);
+
+                game_set_entries_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        game_adapter.setSeclection(position);
+                        game_adapter.notifyDataSetChanged();
+                        if ( position ==0 || game_set_data[position][0] != 1 ) {
+                            sDifficulty = String.valueOf(position + 2);
+                            attemptLogin();
+                        }
+                    }
+                });
+                break;
+            default:
+                break;
+        }
     }
 }
 

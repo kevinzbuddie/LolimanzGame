@@ -2,6 +2,7 @@ package com.gamezone.loliman.lolimanzgame.gridview;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,65 +12,34 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gamezone.loliman.lolimanzgame.R;
+
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
 
 /**
- * Created by Loliman on 2018/1/10.
+ * Created by Loliman on 2018/1/12.
  */
 
-public class GameGirdViewAdapter extends BaseAdapter {
+public class GameSetEntriesAdapter extends BaseAdapter {
 
+    private Context mContext=null;
     private LayoutInflater mLayoutInflater;
-    private int mCount=0;
     private int mColumn=0;
-    private int mViewHeight=0;
-    private HashMap mGameMap = new HashMap();
-    private int mGameMapArray[];
+    private int mViewHeight;
+    private int mGameSetData[][];
 
     private int clickTemp = -1;
-    private int firstClick = -1;
 
-    public GameGirdViewAdapter(Context context, int column, int viewHeight, SerializableHashMap map) {
-        mCount = column * column;
-        mColumn = column;
-        mViewHeight = viewHeight;
-        mGameMap = map.getMap();
+    public GameSetEntriesAdapter(Context context, int column, int view_height, int [][] set_data) {
+        mColumn =  column;
+        mViewHeight = view_height;
+        mGameSetData = set_data;
+        this.mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
-
-        mGameMapArray = new int[mCount];
-        HashSet integerHashSet=new HashSet();
-        Random random = new Random();//创建随机对象
-
-        for (int i = 0; i < mCount; i++) {
-            int randomInt=random.nextInt(mGameMap.size());
-            if (!integerHashSet.contains(randomInt)) {
-                integerHashSet.add(randomInt);
-            }else{
-                i--;
-            }
-        }
-
-        int i=0,j=0;
-        Iterator it;
-        for(it = integerHashSet.iterator(); it.hasNext();) {
-            mGameMapArray[i] = (int)it.next()+1; //plus 1 to avoid 0 index in the game map xml
-            i++;
-        }
-        while ( i == j || j == 0 ) {
-            i = random.nextInt(mCount);
-            j = random.nextInt(mCount);
-        }
-
-        mGameMapArray[i] = mGameMapArray[j]; //make the game point, two same item index!
     }
 
     @Override
     public int getCount() {
-        return mCount;
+        return mColumn*mColumn;
     }
 
     @Override
@@ -81,7 +51,6 @@ public class GameGirdViewAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return 0;
     }
-
     //标识选择的Item
     public void setSeclection(int position) {
         clickTemp = position;
@@ -107,7 +76,6 @@ public class GameGirdViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         ViewHolder vh = null;
-        String ResString;
         int ResId;
 
         if (convertView == null) {
@@ -115,28 +83,31 @@ public class GameGirdViewAdapter extends BaseAdapter {
 
             vh = new ViewHolder();
             vh.imageView = convertView.findViewById(R.id.id_gird_item_image_001);
+            vh.imageView.setPadding(20,20,20,20);
+            vh.imageView.setImageResource(R.drawable.png_1160);
 
-            ResString = mGameMap.get(String.valueOf(mGameMapArray[position])).toString();
-            ResId = getResId(ResString, R.drawable.class);
-            vh.imageView.setImageResource(ResId);
+            if (position >0 && mGameSetData[position][0] == 1){
+                vh.imageView.setImageResource(R.drawable.png_lock);
+            }
 
             vh.textView = convertView.findViewById(R.id.id_grid_item_text_002);
-            vh.textView.setText(String.valueOf(mGameMapArray[position]));
+            vh.textView.setPadding(35,35,35,35);
+            vh.textView.setVisibility(View.VISIBLE);
+            vh.textView.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+            vh.textView.setGravity(Gravity.BOTTOM);
+            vh.textView.setTextSize(26);
+            vh.textView.setText(String.valueOf(position+1));
 
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)vh.imageView.getLayoutParams();
             layoutParams.height = (mViewHeight-20)/mColumn; //20 is two times of padding size of gridView.
             vh.imageView.setLayoutParams(layoutParams);
             convertView.setTag(vh);
+
         }else{
             vh = (ViewHolder)convertView.getTag();
 
-            if (clickTemp == position) {
-                vh.imageView.setBackgroundResource(R.drawable.png_mask);
-            }
-
         }
-        return convertView;
-    }
+        return convertView;    }
 
     @Nullable
     @Override

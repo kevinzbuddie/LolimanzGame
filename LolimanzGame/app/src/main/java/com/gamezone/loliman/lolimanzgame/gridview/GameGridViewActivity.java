@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -16,8 +17,13 @@ import android.widget.Toast;
 
 import com.gamezone.loliman.lolimanzgame.R;
 
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static com.gamezone.loliman.lolimanzgame.GameEntryActivity.ReWriteFile;
+import static com.gamezone.loliman.lolimanzgame.GameEntryActivity.ReadFile;
+import static com.gamezone.loliman.lolimanzgame.GameEntryActivity.mColumn;
 
 
 /**
@@ -37,6 +43,13 @@ public class GameGridViewActivity extends AppCompatActivity {
     private Timer timer;
     private TimerTask timerTask;
     private GameCountDownTimer gameCountDownTimer;
+    private int resultCode = 1980; //for result intent!
+
+    private Button redo_button;
+    private Button next_button;
+
+    private String sDifficulty="";
+    private String isDone="";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,8 +62,9 @@ public class GameGridViewActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         Bundle bundle = intent.getBundleExtra("game_bundle");
-        String sDifficulty = bundle.getString("difficulty_level");
+        sDifficulty = bundle.getString("difficulty_level");
         SerializableHashMap game_map = (SerializableHashMap) bundle.getSerializable("game_map");
+
 
         difficulty_level = Integer.parseInt(sDifficulty);
         game_grid_view.setNumColumns(difficulty_level);
@@ -83,6 +97,13 @@ public class GameGridViewActivity extends AppCompatActivity {
                         if(prev_position != position) {
                             end();
                             Toast.makeText(GameGridViewActivity.this, "Bingo...!\nSCORE:"+String.valueOf(progress), Toast.LENGTH_LONG).show();
+                            next_button.setEnabled(true);//can enter the next set.
+
+                            //todo modify the set data file.
+                            isDone = "done";
+                            // sendResultBack();
+                            update_set_data_file();
+
                             prev_position = -1;
                             first_click = "";
                             second_click = "";
@@ -96,8 +117,63 @@ public class GameGridViewActivity extends AppCompatActivity {
                 }
             }
         });
+
+        redo_button = findViewById(R.id.id_redo_button_005);
+        next_button = findViewById(R.id.id_next_button_006);
+
+        redo_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onRestart();
+            }
+        });
+        next_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(GameGridViewActivity.this, "next set", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
+    public void sendResultBack(){
+        //for result intent!
+        Intent mIntent = new Intent();
+
+        mIntent.putExtra("whichSet", sDifficulty);
+        mIntent.putExtra("isDone", isDone);
+
+        // 设置结果，并进行传送
+        this.setResult(resultCode, mIntent);
+    }
+
+    public void update_set_data_file(){
+
+        int game_set_data[][] = new int[mColumn*mColumn][2];//two value for each set
+        String sDataRead = null;
+        try {
+            sDataRead = ReadFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sDataRead != null;
+        String[] s = sDataRead.split("\n");
+        for (int i = 0; i<mColumn*mColumn; i++){
+            String[] ss = s[i].split(",");
+            game_set_data[i][0] = Integer.valueOf(ss[0]);
+            game_set_data[i][1] = Integer.valueOf(ss[1]);
+        }
+
+        game_set_data[Integer.valueOf(sDifficulty)-2][0] = 2; //2 means that this set had been done!
+        String sWriteData = "";
+        for (int i = 0; i<mColumn*mColumn; i++){
+            sWriteData = sWriteData+String.valueOf(game_set_data[i][0])+","+String.valueOf(game_set_data[i][1]+"\n");
+        }
+        try {
+            ReWriteFile(sWriteData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * 倒计时
      *
@@ -150,55 +226,4 @@ public class GameGridViewActivity extends AppCompatActivity {
         super.onDestroy();
         end();
     }
-/*
-    //activity启动后开始计时
-    @Override
-    protected void onResume() {
-        super.onResume();
-        StartTimer();
-    }
-
-    //进入后台后计时器暂停
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EndTimer();
-    }
-
-    public void StartTimer() {
-        //如果timer和timerTask已经被置null了
-        if (timer == null && timerTask == null) {
-            //新建timer和timerTask
-            timer = new Timer();
-            timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    //每次progress减一
-                    progress--;
-                    //如果到零了，报告
-                    if (progress == 0) {
-                        onPause();
-                        Toast.makeText(GameGridViewActivity.this, "Ahoo...!",Toast.LENGTH_SHORT).show();
-                    }
-                    //设置进度条进度
-                    progress_bar.setProgress(progress);
-                }
-            };
-            //开始执行timer,第一个参数是要执行的任务，
-            //第二个参数是开始的延迟时间（单位毫秒）或者是Date类型的日期，代表开始执行时的系统时间
-            //第三个参数是计时器两次计时之间的间隔（单位毫秒）
-            timer.schedule(timerTask, 1000, 1000);
-        }
-    }
-
-    public void EndTimer()
-    {
-        //这里很奇怪的是如果仅仅是把值赋成Null的话计时并没有停止，循环一次过后Progress就每次都加二了，循环两次过后就是加三
-        //如果仅仅是cancel掉的话也不能再进行调用了
-        //所以想要彻底重置timer的话需要cancel后再置null
-        timer.cancel();
-        timerTask.cancel();
-        timer=null;
-        timerTask=null;
-    }*/
 }

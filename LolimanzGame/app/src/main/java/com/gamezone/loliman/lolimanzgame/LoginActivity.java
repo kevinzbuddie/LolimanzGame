@@ -3,9 +3,7 @@ package com.gamezone.loliman.lolimanzgame;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.XmlResourceParser;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -30,17 +28,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-import com.gamezone.loliman.lolimanzgame.gridview.GameGridViewActivity;
-import com.gamezone.loliman.lolimanzgame.gridview.SerializableHashMap;
-
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

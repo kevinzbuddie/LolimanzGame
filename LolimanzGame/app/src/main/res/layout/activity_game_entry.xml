@@ -4,33 +4,29 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:padding="10dp"
     tools:context="com.gamezone.loliman.lolimanzgame.LoginActivity">
 
-
-    <LinearLayout
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:layout_width="@dimen/icon_width"
-        android:layout_height="@dimen/icon_height"/>
-
     <RelativeLayout
-        android:id="@+id/start_game_form"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <GridView
+            android:id="@+id/id_game_set_entries"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="4" />
 
         <EditText
             android:id="@+id/id_difficulty"
             android:layout_width="match_parent"
             android:layout_height="@dimen/icon_height"
-            android:background="@drawable/edit_shape"
             android:layout_marginTop="@dimen/icon_height"
+            android:background="@drawable/edit_shape"
+            android:layout_below="@id/id_game_set_entries"
             android:hint="@string/input_difficulty"
             android:inputType="numberDecimal"
-            android:textAlignment="center"/>
+            android:textAlignment="center" />
 
         <Button
             android:id="@+id/start_game_button"

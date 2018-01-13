@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:numColumns="6"
-        android:padding="10px">
+        android:padding="5dp">
     </GridView>
 
     <ImageView
@@ -18,7 +18,7 @@
         android:layout_below="@id/id_game_grid_001"
         android:background="@drawable/png_countdown"
         android:layout_marginLeft="15dp"
-        android:layout_marginTop="@dimen/icon_height"/>
+        android:layout_marginTop="30dp"/>
 
     <ProgressBar
         android:id="@+id/id_game_progress_004"
@@ -26,10 +26,43 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/icon_height"
         android:layout_below="@id/id_game_grid_001"
-        android:layout_marginTop="@dimen/icon_height"
+        android:layout_marginTop="30dp"
         android:layout_toRightOf="@id/id_game_SCORE_pic_002"
         android:max="60"
         android:padding="15dp"
         android:progress="60" />
+
+    <RelativeLayout
+        android:id="@+id/id_btn_pair"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/id_game_SCORE_pic_002">
+
+        <Button
+            android:id="@+id/id_redo_button_005"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="@dimen/icon_height"
+            android:layout_marginStart="@dimen/icon_width"
+            android:layout_marginRight="@dimen/icon_width"
+            android:background="@drawable/btn_shape"
+            android:textSize="26sp"
+            android:text="@string/string_redo" />
+
+        <Button
+            android:id="@+id/id_next_button_006"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_shape"
+            android:layout_marginRight="30dp"
+            android:layout_toRightOf="@id/id_redo_button_005"
+            android:layout_marginLeft="@dimen/icon_width"
+            android:layout_alignBaseline="@id/id_redo_button_005"
+            android:textSize="26sp"
+            android:text="@string/string_next"
+            android:enabled="false"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

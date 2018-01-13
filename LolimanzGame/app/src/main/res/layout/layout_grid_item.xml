@@ -12,6 +12,7 @@
         android:id="@+id/id_grid_item_text_002"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/id_gird_item_image_001"
         android:visibility="invisible"/>
 
 </RelativeLayout>
