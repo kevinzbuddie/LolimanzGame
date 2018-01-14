@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -58,6 +59,11 @@ public class GameSetEntriesAdapter extends BaseAdapter {
 
     static class ViewHolder{
         public ImageView imageView;
+        public View three_stars_form;
+        public ImageView iv_1st_star;
+        public ImageView iv_2nd_star;
+        public ImageView iv_3rd_star;
+
         public TextView textView;
     }
 
@@ -85,27 +91,48 @@ public class GameSetEntriesAdapter extends BaseAdapter {
             vh.imageView = convertView.findViewById(R.id.id_gird_item_image_001);
             vh.imageView.setPadding(20,20,20,20);
             vh.imageView.setImageResource(R.drawable.png_1160);
-
             if (position >0 && mGameSetData[position][0] == 1){
                 vh.imageView.setImageResource(R.drawable.png_lock);
             }
-
             vh.textView = convertView.findViewById(R.id.id_grid_item_text_002);
             vh.textView.setPadding(35,35,35,35);
             vh.textView.setVisibility(View.VISIBLE);
-            vh.textView.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
-            vh.textView.setGravity(Gravity.BOTTOM);
             vh.textView.setTextSize(26);
             vh.textView.setText(String.valueOf(position+1));
 
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)vh.imageView.getLayoutParams();
-            layoutParams.height = (mViewHeight-20)/mColumn; //20 is two times of padding size of gridView.
-            vh.imageView.setLayoutParams(layoutParams);
+            RelativeLayout.LayoutParams layoutParams1 = (RelativeLayout.LayoutParams)vh.imageView.getLayoutParams();
+            layoutParams1.height = (mViewHeight-20)/mColumn - 40; //20 is two times of padding size of gridView.
+            vh.imageView.setLayoutParams(layoutParams1);
+
+            //three stars
+            vh.three_stars_form = convertView.findViewById(R.id.id_three_stars);
+            vh.iv_1st_star = convertView.findViewById(R.id.id_1st_star);
+            vh.iv_2nd_star = convertView.findViewById(R.id.id_2nd_star);
+            vh.iv_3rd_star = convertView.findViewById(R.id.id_3rd_star);
+            vh.three_stars_form.setVisibility(View.VISIBLE);
+            vh.three_stars_form.setPadding(40,0,40,0);
+            vh.iv_1st_star.setImageResource(R.drawable.png_star_dummy);
+            vh.iv_2nd_star.setImageResource(R.drawable.png_star_dummy);
+            vh.iv_3rd_star.setImageResource(R.drawable.png_star_dummy);
+            if (mGameSetData[position][1] == 3) {
+                vh.iv_1st_star.setImageResource(R.drawable.png_star);
+                vh.iv_2nd_star.setImageResource(R.drawable.png_star);
+                vh.iv_3rd_star.setImageResource(R.drawable.png_star);
+            }else if(mGameSetData[position][1] == 2){
+                vh.iv_1st_star.setImageResource(R.drawable.png_star);
+                vh.iv_2nd_star.setImageResource(R.drawable.png_star);
+            }else if (mGameSetData[position][1] == 1){
+                vh.iv_1st_star.setImageResource(R.drawable.png_star);
+            }
+
+            ViewGroup.LayoutParams layoutParams2 = (ViewGroup.LayoutParams)vh.three_stars_form.getLayoutParams();
+            layoutParams2.height = 40;
+            vh.three_stars_form.setLayoutParams(layoutParams2);
+
             convertView.setTag(vh);
 
         }else{
             vh = (ViewHolder)convertView.getTag();
-
         }
         return convertView;    }
 

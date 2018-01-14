@@ -6,13 +6,39 @@
     <ImageView
         android:id="@+id/id_gird_item_image_001"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitXY"/>
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"/>
+    <LinearLayout
+        android:id="@+id/id_three_stars"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/id_gird_item_image_001"
+        android:visibility="invisible">
+        <ImageView
+            android:id="@+id/id_1st_star"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:scaleType="fitXY"/>
+        <ImageView
+            android:id="@+id/id_2nd_star"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="fitXY"/>
+        <ImageView
+            android:id="@+id/id_3rd_star"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="fitXY" />
+    </LinearLayout>
     <TextView
         android:id="@+id/id_grid_item_text_002"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/id_gird_item_image_001"
+        android:layout_alignTop="@+id/id_gird_item_image_001"
         android:visibility="invisible"/>
 
 </RelativeLayout>

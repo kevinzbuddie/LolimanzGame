@@ -21,7 +21,7 @@
             android:id="@+id/id_difficulty"
             android:layout_width="match_parent"
             android:layout_height="@dimen/icon_height"
-            android:layout_marginTop="@dimen/icon_height"
+            android:layout_marginTop="30dp"
             android:background="@drawable/edit_shape"
             android:layout_below="@id/id_game_set_entries"
             android:hint="@string/input_difficulty"

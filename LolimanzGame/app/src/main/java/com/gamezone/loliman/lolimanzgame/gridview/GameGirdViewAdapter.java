@@ -89,6 +89,7 @@ public class GameGirdViewAdapter extends BaseAdapter {
 
     static class ViewHolder{
         public ImageView imageView;
+
         public TextView textView;
     }
 

@@ -75,7 +75,7 @@ public class GameEntryActivity extends AppCompatActivity {
         //initialize the data file
         if (!FileIsExist(game_set_data_file_name)){
             try {
-                ReWriteFile("1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n1,1\n");
+                ReWriteFile("1,0\n1,0\n1,0\n1,0\n1,0\n1,0\n1,0\n1,0\n1,0\n1,0\n1,0\n1,0\n1,0\n1,0\n1,0\n1,0\n");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -238,11 +238,11 @@ public class GameEntryActivity extends AppCompatActivity {
             Random rand = new Random();
             int tag = rand.nextInt(4);
             if (tag == 0) {
-                mMapTag = "butterfly";
+                mMapTag = "soccer";//"butterfly";
             } else if (tag == 1) {
-                mMapTag = "emotion";
+                mMapTag = "soccer";//"emotion";
             } else if (tag == 2) {
-                mMapTag = "office";
+                mMapTag = "soccer";//"office";
             } else {
                 mMapTag = "soccer";
             }
@@ -250,9 +250,9 @@ public class GameEntryActivity extends AppCompatActivity {
             Random rand = new Random();
             int tag = rand.nextInt(3);
             if (tag == 0) {
-                mMapTag = "emotion";
+                mMapTag = "soccer";//"emotion";
             } else if (tag == 1) {
-                mMapTag = "office";
+                mMapTag = "soccer";//"office";
             } else {
                 mMapTag = "soccer";
             }
@@ -317,38 +317,7 @@ public class GameEntryActivity extends AppCompatActivity {
         // 根据上面发送过去的请求吗来区别
         switch (requestCode) {
             case 1980:
-                //String whichSet = data.getStringExtra("whichSet");
-                //String isDone = data.getStringExtra("isDone");
 
-                String sDataRead = null;
-                try {
-                    sDataRead = ReadFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                assert sDataRead != null;
-                String[] s = sDataRead.split("\n");
-
-                for (int i = 0; i<mColumn*mColumn; i++){
-                    String[] ss = s[i].split(",");
-                    game_set_data[i][0] = Integer.valueOf(ss[0]);
-                    game_set_data[i][1] = Integer.valueOf(ss[1]);
-                }
-
-                final GameSetEntriesAdapter game_adapter = new GameSetEntriesAdapter(this, mColumn, view_height, game_set_data);
-                game_set_entries_view.setAdapter(game_adapter);
-
-                game_set_entries_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        game_adapter.setSeclection(position);
-                        game_adapter.notifyDataSetChanged();
-                        if ( position ==0 || game_set_data[position][0] != 1 ) {
-                            sDifficulty = String.valueOf(position + 2);
-                            attemptLogin();
-                        }
-                    }
-                });
                 break;
             default:
                 break;

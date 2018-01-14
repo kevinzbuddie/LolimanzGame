@@ -1,5 +1,6 @@
 package com.gamezone.loliman.lolimanzgame.gridview;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -34,6 +35,7 @@ public class GameGridViewActivity extends AppCompatActivity {
 
     private GridView game_grid_view;
     private int difficulty_level = 0;
+    private SerializableHashMap game_map;
     private int view_height = 0;
     private String first_click = "";
     private String second_click = "";
@@ -50,6 +52,7 @@ public class GameGridViewActivity extends AppCompatActivity {
 
     private String sDifficulty="";
     private String isDone="";
+    private int stars=0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,7 +66,7 @@ public class GameGridViewActivity extends AppCompatActivity {
 
         Bundle bundle = intent.getBundleExtra("game_bundle");
         sDifficulty = bundle.getString("difficulty_level");
-        SerializableHashMap game_map = (SerializableHashMap) bundle.getSerializable("game_map");
+        game_map = (SerializableHashMap) bundle.getSerializable("game_map");
 
 
         difficulty_level = Integer.parseInt(sDifficulty);
@@ -101,6 +104,13 @@ public class GameGridViewActivity extends AppCompatActivity {
 
                             //todo modify the set data file.
                             isDone = "done";
+                            if (progress >= 40) {
+                                stars = 3;
+                            }else if (progress >= 20){
+                                stars = 2;
+                            } else {
+                                stars = 1;
+                            }
                             // sendResultBack();
                             update_set_data_file();
 
@@ -124,13 +134,35 @@ public class GameGridViewActivity extends AppCompatActivity {
         redo_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onRestart();
+                finish();
+                Intent intent = new Intent(GameGridViewActivity.this, GameGridViewActivity.class);
+
+                Bundle bundle = new Bundle();
+                bundle.putString("difficulty_level", sDifficulty);
+                bundle.putSerializable("game_map", game_map);
+                intent.putExtra("game_bundle", bundle);
+
+                startActivity(intent);
             }
         });
         next_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(GameGridViewActivity.this, "next set", Toast.LENGTH_LONG).show();
+                if ( Integer.valueOf(sDifficulty) == 10) {
+                    Toast.makeText(GameGridViewActivity.this, "next set", Toast.LENGTH_LONG).show();
+                    return;
+                }else {
+                    finish();
+                    Intent intent = new Intent(GameGridViewActivity.this, GameGridViewActivity.class);
+
+                    Bundle bundle = new Bundle();
+                    sDifficulty = String.valueOf(Integer.valueOf(sDifficulty) + 1);
+                    bundle.putString("difficulty_level", sDifficulty);
+                    bundle.putSerializable("game_map", game_map);
+                    intent.putExtra("game_bundle", bundle);
+
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -143,7 +175,7 @@ public class GameGridViewActivity extends AppCompatActivity {
         mIntent.putExtra("isDone", isDone);
 
         // 设置结果，并进行传送
-        this.setResult(resultCode, mIntent);
+        this.setResult(Activity.RESULT_OK, mIntent);
     }
 
     public void update_set_data_file(){
@@ -164,6 +196,7 @@ public class GameGridViewActivity extends AppCompatActivity {
         }
 
         game_set_data[Integer.valueOf(sDifficulty)-2][0] = 2; //2 means that this set had been done!
+        game_set_data[Integer.valueOf(sDifficulty)-2][1] = stars; //
         String sWriteData = "";
         for (int i = 0; i<mColumn*mColumn; i++){
             sWriteData = sWriteData+String.valueOf(game_set_data[i][0])+","+String.valueOf(game_set_data[i][1]+"\n");
