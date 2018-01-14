@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.gamezone.loliman.lolimanzgame.GameEntryActivity.ReWriteFile;
-import static com.gamezone.loliman.lolimanzgame.GameEntryActivity.ReadFile;
+
+import static com.gamezone.loliman.lolimanzgame.GameEntryActivity.game_set_data_file;
 import static com.gamezone.loliman.lolimanzgame.GameEntryActivity.mColumn;
 
 
@@ -183,7 +183,7 @@ public class GameGridViewActivity extends AppCompatActivity {
         int game_set_data[][] = new int[mColumn*mColumn][2];//two value for each set
         String sDataRead = null;
         try {
-            sDataRead = ReadFile();
+            sDataRead = game_set_data_file.ReadFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -202,7 +202,7 @@ public class GameGridViewActivity extends AppCompatActivity {
             sWriteData = sWriteData+String.valueOf(game_set_data[i][0])+","+String.valueOf(game_set_data[i][1]+"\n");
         }
         try {
-            ReWriteFile(sWriteData);
+            game_set_data_file.WriteFile(sWriteData);
         } catch (IOException e) {
             e.printStackTrace();
         }
